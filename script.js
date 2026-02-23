@@ -1,6 +1,6 @@
 let interviewList = [];
 let rejectionList = [];
-let currentStatus = 'all'
+let currentStatus = "all";
 
 let total = document.getElementById("total");
 let interviewCount = document.getElementById("interview-count");
@@ -13,7 +13,7 @@ const rejectionFilterBtn = document.getElementById("rejection-filter-btn");
 const allCardsSection = document.getElementById("allCards");
 const mainContainer = document.querySelector("main");
 const filteredSection = document.getElementById("filtered-section");
-
+const noJobs = document.getElementById("no-job");
 
 function calculateCount() {
   total.innerText = allCardsSection.children.length;
@@ -33,7 +33,7 @@ function toggleStyle(id) {
   rejectionFilterBtn.classList.add("bg-white", "text-black");
 
   const selected = document.getElementById(id);
-  currentStatus = id
+  currentStatus = id;
 
   selected.classList.remove("bg-white", "text-black");
   selected.classList.add("bg-blue-500", "text-white");
@@ -51,11 +51,9 @@ function toggleStyle(id) {
     renderRejection()
   }
 
-
 }
 
 mainContainer.addEventListener("click", function (event) {
-     
   if (event.target.classList.contains("interveiw-btn")) {
     let parentNode = event.target.parentNode.parentNode;
     let jobTitle = parentNode.querySelector(".job-title").innerText;
@@ -64,34 +62,33 @@ mainContainer.addEventListener("click", function (event) {
     let status = parentNode.querySelector(".status").innerText;
     let notes = parentNode.querySelector(".notes").innerText;
 
-    parentNode.querySelector('.status').innerText = 'INTERVIEW'
+    parentNode.querySelector(".status").innerText = "INTERVIEW";
 
     let cardInfo = {
       jobTitle,
       skill,
       jobKind,
-      status:'INTERVIEW' ,
+      status: "INTERVIEW",
       notes,
     };
 
     const jobExist = interviewList.find(
       (item) => item.jobTitle == cardInfo.jobTitle,
     );
-     
-    
 
     if (!jobExist) {
       interviewList.push(cardInfo);
     }
-    rejectionList = rejectionList.filter(item=> item.jobTitle != cardInfo.jobTitle)
+    rejectionList = rejectionList.filter(
+      (item) => item.jobTitle != cardInfo.jobTitle,
+    );
 
     calculateCount();
 
-    if(currentStatus == 'rejection-filter-btn'){
-        renderRejection()
+    if (currentStatus == "rejection-filter-btn") {
+      renderRejection();
     }
-    // renderInterview();
-  }else if (event.target.classList.contains("rejection-btn")) {
+  } else if (event.target.classList.contains("rejection-btn")) {
     let parentNode = event.target.parentNode.parentNode;
     let jobTitle = parentNode.querySelector(".job-title").innerText;
     let skill = parentNode.querySelector(".skill").innerText;
@@ -99,7 +96,7 @@ mainContainer.addEventListener("click", function (event) {
     let status = parentNode.querySelector(".status").innerText;
     let notes = parentNode.querySelector(".notes").innerText;
 
-    parentNode.querySelector('.status').innerText = 'REJECTED'
+    parentNode.querySelector(".status").innerText = "REJECTED";
 
     let cardInfo = {
       jobTitle,
@@ -112,25 +109,52 @@ mainContainer.addEventListener("click", function (event) {
     const jobExist = rejectionList.find(
       (item) => item.jobTitle == cardInfo.jobTitle,
     );
-     
-    
 
     if (!jobExist) {
       rejectionList.push(cardInfo);
     }
-    interviewList = interviewList.filter(item=> item.jobTitle != cardInfo.jobTitle)
+    interviewList = interviewList.filter(
+      (item) => item.jobTitle != cardInfo.jobTitle,
+    );
 
-    if(currentStatus == "interview-filter-btn"){
-        renderInterview()
+    if (currentStatus == "interview-filter-btn") {
+      renderInterview();
     }
     calculateCount();
+  }
 
-    // renderRejection();
+  // delete logic
+  else if (event.target.parentNode.classList.contains("delete-btn")) {
+    let card;
+
+    if (event.target.parentNode.classList.contains("delete-btn")) {
+      card = event.target.parentNode.parentNode;
+    }
+    const jobTitle = card.querySelector(".job-title").innerText;
+
+    card.remove();
+
+    interviewList = interviewList.filter((item) => item.jobTitle !== jobTitle);
+
+    rejectionList = rejectionList.filter((item) => item.jobTitle !== jobTitle);
+
+    calculateCount();
   }
 });
 
 function renderInterview() {
   filteredSection.innerHTML = "";
+  // No Jobs
+
+  // if (interviewList.length === 0) {
+  //   // যদি কোন interview jobs না থাকে
+  //   filteredSection.classList.add('hidden');
+  //   noJobs.classList.remove('hidden');
+  //   // return;
+  // } else {
+  //   filteredSection.classList.remove('hidden');
+  //   noJobs.classList.add('hidden');
+  // }
 
   for (let interview of interviewList) {
     console.log(interview);
@@ -163,7 +187,7 @@ function renderInterview() {
           </div>
           <div class="delete-btn flex-shrink-0"><img src="./Group 1.png" alt="" /></div>`;
 
-          filteredSection.appendChild(div)
+    filteredSection.appendChild(div);
   }
 }
 
@@ -201,6 +225,6 @@ function renderRejection() {
           </div>
           <div class="delete-btn flex-shrink-0"><img src="./Group 1.png" alt="" /></div>`;
 
-          filteredSection.appendChild(div)
+    filteredSection.appendChild(div);
   }
 }
