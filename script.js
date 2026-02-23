@@ -1,6 +1,6 @@
 let interviewList = [];
 let rejectionList = [];
-let currentStatus = "all";
+let currentStatus = "all-filter-btn";
 
 let total = document.getElementById("total");
 let interviewCount = document.getElementById("interview-count");
@@ -38,19 +38,42 @@ function toggleStyle(id) {
   selected.classList.remove("bg-white", "text-black");
   selected.classList.add("bg-blue-500", "text-white");
 
-  if(id == 'interview-filter-btn'){
-    allCardsSection.classList.add('hidden')
-    filteredSection.classList.remove('hidden')
-    renderInterview()
-  }else if(id == 'all-filter-btn'){
-    allCardsSection.classList.remove('hidden')
-    filteredSection.classList.add('hidden')
-  }else if(id == "rejection-filter-btn"){
-    allCardsSection.classList.add('hidden')
-    filteredSection.classList.remove('hidden')
-    renderRejection()
+  filteredJobs();
+}
+
+function filteredJobs() {
+  filteredSection.innerHTML = "";
+
+  if (currentStatus == "all-filter-btn") {
+    allCardsSection.classList.remove("hidden");
+    filteredSection.classList.add("hidden");
+    noJobs.classList.add("hidden");
+    return;
   }
 
+  allCardsSection.classList.add("hidden");
+
+  if (currentStatus == "interview-filter-btn") {
+    if (interviewList.length == 0) {
+      noJobs.classList.remove("hidden");
+      filteredSection.classList.add("hidden");
+    } else {
+      noJobs.classList.add("hidden");
+      filteredSection.classList.remove("hidden");
+      renderInterview();
+    }
+  }
+
+  if (currentStatus == "rejection-filter-btn") {
+    if (rejectionList.length == 0) {
+      noJobs.classList.remove("hidden");
+      filteredSection.classList.add("hidden");
+    } else {
+      noJobs.classList.add("hidden");
+      filteredSection.classList.remove("hidden");
+      renderRejection();
+    }
+  }
 }
 
 mainContainer.addEventListener("click", function (event) {
@@ -84,10 +107,7 @@ mainContainer.addEventListener("click", function (event) {
     );
 
     calculateCount();
-
-    if (currentStatus == "rejection-filter-btn") {
-      renderRejection();
-    }
+    filteredJobs();
   } else if (event.target.classList.contains("rejection-btn")) {
     let parentNode = event.target.parentNode.parentNode;
     let jobTitle = parentNode.querySelector(".job-title").innerText;
@@ -102,7 +122,7 @@ mainContainer.addEventListener("click", function (event) {
       jobTitle,
       skill,
       jobKind,
-      status,
+      status: "REJECTED",
       notes,
     };
 
@@ -117,10 +137,8 @@ mainContainer.addEventListener("click", function (event) {
       (item) => item.jobTitle != cardInfo.jobTitle,
     );
 
-    if (currentStatus == "interview-filter-btn") {
-      renderInterview();
-    }
     calculateCount();
+    filteredJobs();
   }
 
   // delete logic
@@ -138,23 +156,13 @@ mainContainer.addEventListener("click", function (event) {
 
     rejectionList = rejectionList.filter((item) => item.jobTitle !== jobTitle);
 
+    filteredJobs();
     calculateCount();
   }
 });
 
 function renderInterview() {
   filteredSection.innerHTML = "";
-  // No Jobs
-
-  // if (interviewList.length === 0) {
-  //   // যদি কোন interview jobs না থাকে
-  //   filteredSection.classList.add('hidden');
-  //   noJobs.classList.remove('hidden');
-  //   // return;
-  // } else {
-  //   filteredSection.classList.remove('hidden');
-  //   noJobs.classList.add('hidden');
-  // }
 
   for (let interview of interviewList) {
     console.log(interview);
@@ -167,7 +175,7 @@ function renderInterview() {
               ${interview.jobKind}
             </p>
             <p class="status font-bold bg-[#EEF4FF] mb-2 px-6 py-3 w-fit rounded-[8px]">
-              INTERVIEW
+               ${interview.status}
             </p>
             <p class="notes mb-5">
              ${interview.notes}
@@ -205,7 +213,7 @@ function renderRejection() {
               ${rejection.jobKind}
             </p>
             <p class="status font-bold bg-[#EEF4FF] mb-2 px-6 py-3 w-fit rounded-[8px]">
-              REJECTED
+               ${rejection.status}
             </p>
             <p class="notes mb-5">
              ${rejection.notes}
